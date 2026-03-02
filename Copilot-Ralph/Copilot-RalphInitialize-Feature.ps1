@@ -17,8 +17,8 @@ The technical stack is: $Stack
 ACT AS THE MASTER ARCHITECT:
 1. Interview me: Ask any clarifying questions to resolve ambiguity.
 2. Analyze: Look at the existing codebase to ensure the plan follows local patterns.
-3. Structure: Create a './plans/plan-title' directory.
-4. Output: Generate a sequence of 'plan-{description}-N.md' and 'state-{description}-N.json' files.
+3. Structure: Create a './.plans/plan-title' directory.
+4. Output: Generate a sequence of 'plan-{description}-N.md' and 'state-{description}-N.json' files, these MUST be sorted alphabetically so another script can run through them sequentially.
    - Plans must be granular (max 3-4 files changed per plan).
    - Provide code examples where applicable.
    - Each state-N.json MUST follow this exact schema:
