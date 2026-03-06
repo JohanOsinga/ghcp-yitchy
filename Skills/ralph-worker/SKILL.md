@@ -18,4 +18,4 @@ It is of utmost importance that you ONLY HANDLE THE CURRENT STEP. Don't try and 
 4. **Test**: Add unit/integration tests for the step or whole feature, make sure all tests still pass.
 5. **Finalize Plan**: Mark the state file `completed: true` if all steps have been completed. Never forget this.
 6. **Summarize**: When a plan is marked `completed: true`, write a concise technical summary of changes to the `learnings` array in the JSON and if applicable, provide the user with a small summary of how to manually test the feature as well.
-7. **Commit**: Run `git add .` and `git commit -m "A descriptive description of changes"` for the changes in this step.
+7. **Commit**: Run `git add .` and `git commit -m "A descriptive description of changes"` for the changes in this step, making sure that if the state file needed updating, this is also included in a single commit instead of in a separate one.
