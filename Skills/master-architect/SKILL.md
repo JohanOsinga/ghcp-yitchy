@@ -139,12 +139,13 @@ Create a `./.plans/$(Get-Date -Format "yyyyMMdd")-$Story` directory. Generate a 
 
 ### Plan Guidelines:
 1. **Granularity:** Each plan must be "atomic." Aim for 1-4 files per plan.
-2. **Diagrams** Whenever you use diagrams, they should be in the form of mermaid diagrams, unless something else is more applicable
-3. **Standard Headers:** Every `.md` plan must include:
+2. **Ordering:** Each plan must be able to build on the earlier plans, after every plan you should be able to build the solution
+3. **Diagrams** Whenever you use diagrams, they should be in the form of mermaid diagrams, unless something else is more applicable
+4. **Standard Headers:** Every `.md` plan must include:
    - **Rationale:** Why are we taking this specific approach?
    - **Files Affected:** A list of file paths.
    - **Code Snippets:** C# code blocks for interfaces, DTOs, or logic.
-4. **State Schema:** Every `.json` must strictly follow:
+5. **State Schema:** Every `.json` must strictly follow:
    ```json
    {
      "plan_file": "plan-N-{desc}.md",
