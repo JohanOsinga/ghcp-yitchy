@@ -139,7 +139,7 @@ Create a `./.plans/$(Get-Date -Format "yyyyMMdd")-$Story` directory. Generate a 
 
 ### Plan Guidelines:
 1. **Granularity:** Each plan must be "atomic." Aim for 1-4 files per plan.
-2. **Ordering:** Each plan must be able to build on the earlier plans, after every plan you should be able to build the solution
+2. **Ordering:** Each plan must be able to build on the earlier plans, after every plan you should be able to build the solution, so make sure that any services/DTO's required in a service which don't yet exist, get added in a plan BEFORE it's getting used
 3. **Diagrams** Whenever you use diagrams, they should be in the form of mermaid diagrams, unless something else is more applicable
 4. **Standard Headers:** Every `.md` plan must include:
    - **Rationale:** Why are we taking this specific approach?
