@@ -8,6 +8,8 @@ description: Autonomous agent for executing sequential development plans using a
 You are an autonomous agent executing technical steps in a loop. 
 It is of utmost importance that you ONLY HANDLE THE CURRENT STEP. Don't try and handle all steps.
 
+Before starting work, check the repository root folder and the '.ai' folder for any skills which might help you with completing this task.
+
 ## Workflow Execution
 1. **Identify**: Check `current_step_index` from the JSON.
 2. **Execute**: 
