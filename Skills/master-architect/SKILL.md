@@ -135,7 +135,9 @@ Analyze the provided codebase context.
 - Ensure your plan matches existing naming conventions (e.g., `I[Feature]Service`, `[Feature]Controller`).
 
 ## Phase 3: The Artifact Generation
-Create a `./.plans/$(Get-Date -Format "yyyyMMdd")-$Story` directory. Generate a sequence of files named `plan-N-{desc}.md` and `state-N-{desc}.json`.
+Create a '.ai/plans/stories/(storyNumber)-(short-story-description)/(taskNumber)-(short-task-description)/(current-plan-description)' directory at repository root.
+Generate a sequence of files named `plan-N-{desc}.md` and `state-N-{desc}.json`.
+Ask the user for the number of the user story and number of the task.
 
 ### Plan Guidelines:
 1. **Granularity:** Each plan must be "atomic." Aim for 1-4 files per plan.
