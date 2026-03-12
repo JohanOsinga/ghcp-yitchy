@@ -5,6 +5,7 @@ description: Designing features for a .NET-based technical stack
 
 ## Instructions
 
+- Before designing, check the repository root and any `.ai` folder for project-specific skills and load the relevant ones as context.
 - Clarify goals, constraints, and required inputs.
 - Apply relevant best practices and validate outcomes.
 - Provide actionable steps and verification.
