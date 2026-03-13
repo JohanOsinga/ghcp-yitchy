@@ -5,7 +5,13 @@ param (
     [string]$Story,
     
     [Parameter(Position=1)]
-    [string]$Stack = ".NET, Blazor, and the JS framework found in the project" # Change your default stack here
+    [string]$Stack = ".NET, Blazor, and the JS framework found in the project", # Change your default stack here
+
+    [Parameter(Position=2)]
+    [string]$Model = "claude-sonnet-4.6",
+
+    [Parameter(Position=3)]
+    [string]$Reasoning = "high"
 )
 
 Write-Host "Summoning the Master Architect..." -ForegroundColor Cyan
@@ -16,7 +22,7 @@ $ArchitectPrompt = "Use the master-architect skill. Story: $Story, Stack: $Stack
 $TempPromptFile = [System.IO.Path]::GetTempFileName()
 try {
     Set-Content -Path $TempPromptFile -Value $ArchitectPrompt -Encoding UTF8
-    copilot -i "@$TempPromptFile"
+    copilot -i "@$TempPromptFile" --model $Model --reasoning-effort $Reasoning --yolo
 } finally {
     Remove-Item -Path $TempPromptFile -ErrorAction SilentlyContinue
 }
