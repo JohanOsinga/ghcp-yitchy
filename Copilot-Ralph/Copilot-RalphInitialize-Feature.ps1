@@ -1,9 +1,18 @@
 # Initialize-Feature.ps1
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory=$true, Position=0)]
-    [string]$Story,
-    
+    [Parameter(Position=0)]
+    [string]$Story = "",
+
+    [Parameter()]
+    [string]$WorkItemId = "",
+
+    [Parameter()]
+    [string]$Project = "",
+
+    [Parameter()]
+    [string]$Org = "",
+
     [Parameter(Position=1)]
     [string]$Stack = ".NET, Blazor, and the JS framework found in the project", # Change your default stack here
 
@@ -13,6 +22,11 @@ param (
     [Parameter(Position=3)]
     [string]$Reasoning = "high"
 )
+
+if ([string]::IsNullOrWhiteSpace($Story) -and [string]::IsNullOrWhiteSpace($WorkItemId)) {
+    Write-Error "Provide either -Story (free-text) or -WorkItemId (Azure DevOps work item ID)."
+    exit 1
+}
 
 Write-Host "Summoning the Master Architect..." -ForegroundColor Cyan
 
