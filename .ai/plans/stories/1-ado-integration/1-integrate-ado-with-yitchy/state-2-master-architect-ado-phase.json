@@ -10,7 +10,7 @@
   "total_steps": 1,
   "manual_testing_steps": [
     "Copy updated SKILL.md to C:\\Users\\{username}\\.copilot\\skills\\master-architect\\SKILL.md.",
-    "Run Copilot-RalphInitialize-Feature.ps1 with -WorkItemId, -Project, -Org.",
+    "Run Copilot-YitchyInitialize-Feature.ps1 with -WorkItemId, -Project, -Org.",
     "Verify the User Story description is updated in ADO with a planner summary.",
     "Verify child Tasks are created in ADO — each with a STATE_FILE: line in the description.",
     "Verify ado-tasks.json is created in the plan directory with correct task ID mappings."

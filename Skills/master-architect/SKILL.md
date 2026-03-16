@@ -207,7 +207,7 @@ files, using the following schema:
 }
 ```
 
-This file is consumed by `Copilot-RalphLoop.ps1` to synchronise ADO task states without
+This file is consumed by `Copilot-YitchyLoop.ps1` to synchronise ADO task states without
 re-querying ADO at loop startup.
 
 ## Phase 4: Quality Assurance & Build
