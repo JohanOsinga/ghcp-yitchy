@@ -1,8 +1,8 @@
 {
   "plan_file": "plan-1-initialize-ado-params.md",
-  "current_step_index": 1,
+  "current_step_index": 2,
   "total_steps": 2,
-  "completed": false,
+  "completed": true,
   "learnings": [],
   "manual_testing_steps": [
     "Run `Copilot-RalphInitialize-Feature.ps1 -Story 'Test story'` — verify existing behavior is unchanged.",

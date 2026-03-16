@@ -30,7 +30,17 @@ if ([string]::IsNullOrWhiteSpace($Story) -and [string]::IsNullOrWhiteSpace($Work
 
 Write-Host "Summoning the Master Architect..." -ForegroundColor Cyan
 
-$ArchitectPrompt = "Use the master-architect skill. Story: $Story, Stack: $Stack"
+if (-not [string]::IsNullOrWhiteSpace($WorkItemId)) {
+    $ArchitectPrompt = @"
+Use the master-architect skill.
+Read the User Story from Azure DevOps work item #$WorkItemId (Project: $Project, Org: $Org) using ado-wit_get_work_item. Use its Title and Description as the story input for planning.
+After generating all plan and state files, perform the ADO Output Phase as described in the master-architect skill: update the User Story description with a planner summary, create child ADO Tasks (one per plan-N-*.md file), and write ado-tasks.json in the plan directory.
+ADO Context: WorkItemId=$WorkItemId, Project=$Project, Org=$Org
+Stack: $Stack
+"@
+} else {
+    $ArchitectPrompt = "Use the master-architect skill. Story: $Story, Stack: $Stack"
+}
 
 # Write prompt to a temp file to avoid shell argument-splitting on multi-line strings
 $TempPromptFile = [System.IO.Path]::GetTempFileName()
