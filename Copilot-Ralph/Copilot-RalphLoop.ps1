@@ -84,6 +84,15 @@ if (-not [string]::IsNullOrWhiteSpace($WorkItemId)) {
 
 foreach ($file in $stateFiles) {
     Write-Host "Working on: $($file.Name)" -ForegroundColor Cyan
+
+    # Set ADO task to Active before starting work on this plan
+    $adoTaskId = $adoTaskMap[$file.Name]
+    if ($adoTaskId) {
+        Write-Host "Setting ADO Task #$adoTaskId to Active..." -ForegroundColor DarkCyan
+        az boards work-item update --id $adoTaskId --state "Active" `
+            --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
+    }
+
     $lastIndex = -1
     $stuckCount = 0
 
@@ -125,6 +134,21 @@ foreach ($file in $stateFiles) {
         Status  = "$statusEmoji"
         Steps   = "$($finalState.current_step_index)/$($finalState.total_steps)"
         Summary = ($finalState.learnings -join "; ")
+    }
+
+    # Sync completion back to ADO
+    if ($adoTaskId -and $finalState.completed) {
+        Write-Host "Setting ADO Task #$adoTaskId to Closed..." -ForegroundColor DarkCyan
+        az boards work-item update --id $adoTaskId --state "Closed" `
+            --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
+
+        if ($finalState.learnings.Count -gt 0) {
+            $comment = "Ralph worker completed this task.`n`nLearnings:`n" +
+                       ($finalState.learnings -join "`n")
+            az boards work-item comment add --id $adoTaskId --comment $comment `
+                --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
+            Write-Host "Posted learnings as comment on ADO Task #$adoTaskId." -ForegroundColor Green
+        }
     }
 }
 
