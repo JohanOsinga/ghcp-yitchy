@@ -39,11 +39,16 @@ if ([string]::IsNullOrWhiteSpace($TargetBranch)) {
 }
 
 $RalphBranch = "$BranchPrefix$(Split-Path -Leaf $StateDir)"
-Write-Host "Creating Ralph branch: $RalphBranch (target: $TargetBranch)" -ForegroundColor Cyan
-git checkout -b $RalphBranch
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to create branch '$RalphBranch'."
-    exit 1
+$currentBranch = git rev-parse --abbrev-ref HEAD 2>&1
+if ($currentBranch -eq $RalphBranch) {
+    Write-Host "Already on Ralph branch: $RalphBranch" -ForegroundColor Green
+} else {
+    Write-Host "Creating Ralph branch: $RalphBranch (target: $TargetBranch)" -ForegroundColor Cyan
+    git checkout -b $RalphBranch
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to create branch '$RalphBranch'."
+        exit 1
+    }
 }
 
 $stateFiles = Get-ChildItem -Path "$StateDir" -Filter "*.json"
