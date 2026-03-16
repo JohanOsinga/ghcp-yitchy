@@ -18,7 +18,13 @@ param (
 
     # Azure DevOps project name
     [Parameter()]
-    [string]$AzureDevOpsProject = ""
+    [string]$AzureDevOpsProject = "",
+
+    [Parameter()]
+    [string]$Model = "claude-sonnet-4.6",
+
+    [Parameter()]
+    [string]$Reasoning = "medium"
 )
 $MaxIterations = 15
 $SummaryLog = @()
@@ -80,7 +86,7 @@ foreach ($file in $stateFiles) {
         try {
             Set-Content -Path $TempRalphPromptFile -Value "Use the ralph-worker skill. State: $(Get-Content $file.FullName -Raw)" -Encoding UTF8
             # Triggering the skill by name now that frontmatter is fixed
-            copilot -p "@$TempRalphPromptFile" --autopilot --yolo --max-autopilot-continues 3
+            copilot -p "@$TempRalphPromptFile" --model $Model --reasoning-effort $Reasoning --yolo --autopilot --max-autopilot-continues 3
         }
         finally {
             Remove-Item -Path $TempRalphPromptFile -ErrorAction SilentlyContinue
