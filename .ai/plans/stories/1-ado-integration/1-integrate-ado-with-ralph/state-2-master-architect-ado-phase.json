@@ -1,9 +1,13 @@
 {
+  "current_step_index": 1,
   "plan_file": "plan-2-master-architect-ado-phase.md",
-  "current_step_index": 0,
+  "completed": true,
+  "learnings": [
+    "Added '## ADO Integration (Optional)' section to Skills/master-architect/SKILL.md, positioned after Phase 3 (Artifact Generation) and before Phase 4 (Quality Assurance).",
+    "The section defines four sub-steps: Pre-Phase (read work item), Post-Phase A (update User Story), Post-Phase B (create child Tasks with STATE_FILE lines), and Post-Phase C (write ado-tasks.json).",
+    "ado-tasks.json schema documented: workItemId, project, org, and taskMappings array with stateFile/taskId/taskTitle per plan."
+  ],
   "total_steps": 1,
-  "completed": false,
-  "learnings": [],
   "manual_testing_steps": [
     "Copy updated SKILL.md to C:\\Users\\{username}\\.copilot\\skills\\master-architect\\SKILL.md.",
     "Run Copilot-RalphInitialize-Feature.ps1 with -WorkItemId, -Project, -Org.",

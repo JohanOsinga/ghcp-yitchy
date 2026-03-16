@@ -20,6 +20,11 @@ param (
     [Parameter()]
     [string]$AzureDevOpsProject = "",
 
+    # When provided, the loop reads ado-tasks.json from $StateDir and
+    # synchronises ADO task states throughout execution.
+    [Parameter()]
+    [string]$WorkItemId = "",
+
     [Parameter()]
     [string]$Model = "claude-sonnet-4.6",
 
@@ -59,8 +64,35 @@ if ($currentBranch -eq $RalphBranch) {
 
 $stateFiles = Get-ChildItem -Path "$StateDir" -Filter "*.json"
 
+# ── ADO task mapping ──────────────────────────────────────────────────────────
+# Keys: state file base name (e.g. "state-1-foo.json")  Values: ADO task ID
+$adoTaskMap = @{}
+if (-not [string]::IsNullOrWhiteSpace($WorkItemId)) {
+    $adoTasksFile = Join-Path $StateDir "ado-tasks.json"
+    if (Test-Path $adoTasksFile) {
+        $adoMeta = Get-Content $adoTasksFile -Raw | ConvertFrom-Json
+        foreach ($m in $adoMeta.taskMappings) {
+            $adoTaskMap[$m.stateFile] = $m.taskId
+        }
+        if ([string]::IsNullOrWhiteSpace($AzureDevOpsOrg))     { $AzureDevOpsOrg     = $adoMeta.org }
+        if ([string]::IsNullOrWhiteSpace($AzureDevOpsProject)) { $AzureDevOpsProject = $adoMeta.project }
+        Write-Host "Loaded $($adoTaskMap.Count) ADO task mapping(s)." -ForegroundColor Cyan
+    } else {
+        Write-Warning "ado-tasks.json not found in $StateDir — ADO state updates will be skipped."
+    }
+}
+
 foreach ($file in $stateFiles) {
     Write-Host "Working on: $($file.Name)" -ForegroundColor Cyan
+
+    # Set ADO task to Active before starting work on this plan
+    $adoTaskId = $adoTaskMap[$file.Name]
+    if ($adoTaskId) {
+        Write-Host "Setting ADO Task #$adoTaskId to Active..." -ForegroundColor DarkCyan
+        az boards work-item update --id $adoTaskId --state "Active" `
+            --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
+    }
+
     $lastIndex = -1
     $stuckCount = 0
 
@@ -102,6 +134,21 @@ foreach ($file in $stateFiles) {
         Status  = "$statusEmoji"
         Steps   = "$($finalState.current_step_index)/$($finalState.total_steps)"
         Summary = ($finalState.learnings -join "; ")
+    }
+
+    # Sync completion back to ADO
+    if ($adoTaskId -and $finalState.completed) {
+        Write-Host "Setting ADO Task #$adoTaskId to Closed..." -ForegroundColor DarkCyan
+        az boards work-item update --id $adoTaskId --state "Closed" `
+            --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
+
+        if ($finalState.learnings.Count -gt 0) {
+            $comment = "Ralph worker completed this task.`n`nLearnings:`n" +
+                       ($finalState.learnings -join "`n")
+            az boards work-item comment add --id $adoTaskId --comment $comment `
+                --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
+            Write-Host "Posted learnings as comment on ADO Task #$adoTaskId." -ForegroundColor Green
+        }
     }
 }
 
