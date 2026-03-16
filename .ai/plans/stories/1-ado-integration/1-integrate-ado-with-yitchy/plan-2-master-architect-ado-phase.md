@@ -79,14 +79,14 @@ files, using the following schema:
 }
 ```
 
-This file is consumed by `Copilot-RalphLoop.ps1` to synchronise ADO task states without
+This file is consumed by `Copilot-YitchyLoop.ps1` to synchronise ADO task states without
 re-querying ADO at loop startup.
 ```
 
 ## Manual Testing Steps
 
 1. After updating `SKILL.md`, copy it to `C:\Users\{username}\.copilot\skills\master-architect\SKILL.md`.
-2. Run `Copilot-RalphInitialize-Feature.ps1 -WorkItemId <id> -Project <proj> -Org <org>`.
+2. Run `Copilot-YitchyInitialize-Feature.ps1 -WorkItemId <id> -Project <proj> -Org <org>`.
 3. Verify the User Story description is updated in ADO with a planner summary.
 4. Verify child Tasks are created in ADO with correct titles and `STATE_FILE:` lines in their descriptions.
 5. Verify `ado-tasks.json` is created in the plan directory with the correct Task ID mappings.

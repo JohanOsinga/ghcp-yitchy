@@ -1,8 +1,8 @@
-# ADO Integration for RALPH — Architecture Manifest
+# ADO Integration for YITCHY — Architecture Manifest
 
 ## Overview
 
-This feature integrates the RALPH pattern with Azure DevOps, enabling the planner
+This feature integrates the YITCHY pattern with Azure DevOps, enabling the planner
 (`master-architect`) to read User Stories from ADO and output structured plans back as
 ADO Tasks, and enabling the worker loop to drive ADO task state transitions in sync with
 local execution state.
@@ -44,8 +44,8 @@ sequenceDiagram
     participant Init as Initialize-Feature.ps1
     participant Copilot as Copilot CLI<br/>(master-architect)
     participant ADO as Azure DevOps
-    participant Loop as RalphLoop.ps1
-    participant Worker as Copilot CLI<br/>(ralph-worker)
+    participant Loop as YitchyLoop.ps1
+    participant Worker as Copilot CLI<br/>(yitchy-worker)
 
     User->>Init: -WorkItemId 1234 -Project MyProj -Org https://...
     Init->>Copilot: Prompt with ADO context
@@ -80,9 +80,9 @@ sequenceDiagram
 
 | File | Change |
 |---|---|
-| `Copilot-Ralph/Copilot-RalphInitialize-Feature.ps1` | Add ADO params; build ADO-aware prompt |
+| `Copilot-Yitchy/Copilot-YitchyInitialize-Feature.ps1` | Add ADO params; build ADO-aware prompt |
 | `Skills/master-architect/SKILL.md` | Add ADO Integration (Optional) section |
-| `Copilot-Ralph/Copilot-RalphLoop.ps1` | Read `ado-tasks.json`; update task states |
+| `Copilot-Yitchy/Copilot-YitchyLoop.ps1` | Read `ado-tasks.json`; update task states |
 
 ## NuGet / External Tools Added
 

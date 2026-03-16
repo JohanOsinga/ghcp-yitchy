@@ -10,7 +10,7 @@ planning. The original `-Story` mode is fully preserved for backward compatibili
 
 ## Files Affected
 
-- `Copilot-Ralph/Copilot-RalphInitialize-Feature.ps1`
+- `Copilot-Yitchy/Copilot-YitchyInitialize-Feature.ps1`
 
 ## Steps
 
@@ -31,7 +31,7 @@ master-architect skill to:
 ## Code Snippets
 
 ```powershell
-# Copilot-RalphInitialize-Feature.ps1 — full replacement
+# Copilot-YitchyInitialize-Feature.ps1 — full replacement
 [CmdletBinding()]
 param (
     [Parameter(Position=0)]
@@ -86,6 +86,6 @@ try {
 
 ## Manual Testing Steps
 
-1. Run `Copilot-RalphInitialize-Feature.ps1 -Story "Test story"` — verify existing behavior is unchanged.
-2. Run `Copilot-RalphInitialize-Feature.ps1` (no arguments) — verify a clear error message is shown.
+1. Run `Copilot-YitchyInitialize-Feature.ps1 -Story "Test story"` — verify existing behavior is unchanged.
+2. Run `Copilot-YitchyInitialize-Feature.ps1` (no arguments) — verify a clear error message is shown.
 3. Run with `-WorkItemId 1234 -Project MyProject -Org https://dev.azure.com/myorg` and inspect the temp prompt file content before it is deleted (add a `Read-Host` pause if needed) — verify the ADO context is present.

@@ -14,7 +14,7 @@ creation. Graceful degradation is built in — if `ado-tasks.json` is absent or
 
 ## Files Affected
 
-- `Copilot-Ralph/Copilot-RalphLoop.ps1`
+- `Copilot-Yitchy/Copilot-YitchyLoop.ps1`
 
 ## Steps
 
@@ -47,7 +47,7 @@ param (
     [string]$StateDir,
 
     [Parameter()]
-    [string]$BranchPrefix = "ralph/",
+    [string]$BranchPrefix = "yitchy/",
 
     [Parameter()]
     [string]$TargetBranch = "",
@@ -131,7 +131,7 @@ foreach ($file in $stateFiles) {
             --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
 
         if ($finalState.learnings.Count -gt 0) {
-            $comment = "Ralph worker completed this task.`n`nLearnings:`n" +
+            $comment = "Yitchy worker completed this task.`n`nLearnings:`n" +
                        ($finalState.learnings -join "`n")
             az boards work-item comment add --id $adoTaskId --comment $comment `
                 --org $AzureDevOpsOrg --project $AzureDevOpsProject | Out-Null
