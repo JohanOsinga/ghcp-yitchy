@@ -38,7 +38,7 @@ if ([string]::IsNullOrWhiteSpace($TargetBranch)) {
     }
 }
 
-$RalphBranch = "$BranchPrefix$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+$RalphBranch = "$BranchPrefix$(Split-Path -Leaf $StateDir)"
 Write-Host "Creating Ralph branch: $RalphBranch (target: $TargetBranch)" -ForegroundColor Cyan
 git checkout -b $RalphBranch
 if ($LASTEXITCODE -ne 0) {
