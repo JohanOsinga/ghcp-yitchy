@@ -1,0 +1,12 @@
+{
+  "plan_file": "plan-1-initialize-ado-params.md",
+  "current_step_index": 0,
+  "total_steps": 2,
+  "completed": false,
+  "learnings": [],
+  "manual_testing_steps": [
+    "Run `Copilot-RalphInitialize-Feature.ps1 -Story 'Test story'` — verify existing behavior is unchanged.",
+    "Run `Copilot-RalphInitialize-Feature.ps1` (no arguments) — verify a clear error message is shown.",
+    "Run with `-WorkItemId 1234 -Project MyProject -Org https://dev.azure.com/myorg` and verify the ADO-aware prompt is passed to Copilot CLI."
+  ]
+}

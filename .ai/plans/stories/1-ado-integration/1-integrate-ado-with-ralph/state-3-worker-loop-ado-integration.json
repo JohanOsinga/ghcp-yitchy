@@ -1,0 +1,14 @@
+{
+  "plan_file": "plan-3-worker-loop-ado-integration.md",
+  "current_step_index": 0,
+  "total_steps": 3,
+  "completed": false,
+  "learnings": [],
+  "manual_testing_steps": [
+    "Run the loop WITHOUT -WorkItemId — verify existing StateDir behavior is completely unchanged.",
+    "Run with a valid ado-tasks.json and -WorkItemId — verify each task transitions to Active before its plan runs.",
+    "After each plan completes (completed=true in state.json), verify the ADO task is set to Closed.",
+    "Verify learnings are posted as a comment on each closed ADO Task.",
+    "Simulate a stuck loop (state never advances) — verify the task remains Active and is NOT closed."
+  ]
+}
