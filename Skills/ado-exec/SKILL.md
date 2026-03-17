@@ -1,11 +1,11 @@
 ---
 name: ado-exec
-description: Autonomous agent that reads an Azure DevOps work item (UserStory, Task, or Bug), executes all tasks in dependency order, verifies the build and tests, commits changes, and creates a pull request — keeping ADO work item statuses updated throughout.
+description: Autonomous agent that reads an Azure DevOps work item (UserStory, Task, or Bug), executes all tasks in dependency order, verifies the build and tests, commits changes, and creates a pull request — keeping ADO work item statuses updated throughout. Works with both Azure DevOps and GitHub hosted repositories.
 ---
 
 # ADO-Exec Skill
 
-You are an autonomous execution agent. You receive an Azure DevOps work item number and fully implement, verify, and ship it — from reading the work item to opening a pull request — with no human intervention required during the loop.
+You are an autonomous execution agent. You receive an Azure DevOps work item number and fully implement, verify, and ship it — from reading the work item to opening a pull request — with no human intervention required during the loop. The code repository can be hosted on either Azure DevOps or GitHub.
 
 **This skill is completely self-contained. Do NOT invoke or rely on any other skill.**
 
@@ -31,14 +31,16 @@ The work item number is the only required input.
 
 Before doing anything else, gather the context you need.
 
-### 0.1 — Infer ADO org and project from git remote
+### 0.1 — Detect git remote and resolve ADO project
 
 Run:
 ```
 git remote get-url origin
 ```
 
-Parse the result. Azure DevOps remote URLs follow one of these patterns:
+Parse the result. Determine the remote host type:
+
+**Azure DevOps remote URLs:**
 
 | Pattern | Org | Project |
 |---|---|---|
@@ -47,10 +49,33 @@ Parse the result. Azure DevOps remote URLs follow one of these patterns:
 
 Set variables:
 - `$AdoOrg` = full org URL, e.g. `https://dev.azure.com/myorg`
-- `$AdoProject` = project name
+- `$AdoProject` = project name (extracted from the URL)
+- `$RepoHost` = `"azuredevops"`
+
+**GitHub remote URLs:**
+
+| Pattern | Owner | Repo |
+|---|---|---|
+| `https://github.com/{owner}/{repo}` | `{owner}` | `{repo}` |
+| `git@github.com:{owner}/{repo}.git` | `{owner}` | `{repo}` |
+
+Set variables:
+- `$GitHubOwner` = the GitHub org or username
+- `$GitHubRepo` = the repository name (without `.git`)
+- `$RepoHost` = `"github"`
+
+**When `$RepoHost` == `"github"` — discover the ADO project:**
+
+`$AdoProject` is still required for all work item operations regardless of where the code is hosted. Since it cannot be inferred from a GitHub URL, discover it by searching ADO for the work item:
+
+Use `ado-search_workitem` with `searchText` set to the work item ID (e.g. `"18323"`). The result will contain the project name in the work item's `System.TeamProject` field. Set `$AdoProject` from that value.
+
+If the search returns no results, stop and ask the user: *"This repo is on GitHub. Which Azure DevOps project contains work item #{WorkItemId}?"*
+
+Set for all cases:
 - `$TargetBranch` = current branch (`git rev-parse --abbrev-ref HEAD`)
 
-If the remote URL cannot be parsed, stop and report the error clearly, asking the user to verify the git remote.
+If the remote URL cannot be parsed as either pattern, stop and report the error clearly, asking the user to verify the git remote.
 
 ### 0.2 — Detect build system
 
@@ -242,14 +267,64 @@ If push fails, report the error and stop. Do not attempt to create the PR.
 
 ### 4.2 — Create Pull Request
 
+**If `$RepoHost` == `"github"`:**
+
+Retrieve stored GitHub credentials using git's credential helper:
+
+```powershell
+$credInput = @"
+protocol=https
+host=github.com
+"@
+$creds = $credInput | git credential fill
+$username = ($creds | Select-String "^username=") -replace "^username=", ""
+$password = ($creds | Select-String "^password=") -replace "^password=", ""
+```
+
+Then create the PR via the GitHub REST API using Basic auth (the `$password` will be a GitHub personal access token or OAuth token stored by git):
+
+```powershell
+$authBytes = [System.Text.Encoding]::ASCII.GetBytes("$username`:$password")
+$authBase64 = [System.Convert]::ToBase64String($authBytes)
+
+$headers = @{
+    Authorization = "Basic $authBase64"
+    Accept = "application/vnd.github+json"
+    "User-Agent" = "PowerShell"
+}
+
+$payload = @{
+    title = "feat: {UserStory.Title} (ADO #{WorkItemId})"
+    head  = "{BranchName}"
+    base  = "{TargetBranch}"
+    body  = "{PR description}"
+} | ConvertTo-Json
+
+$response = Invoke-WebRequest `
+    -Uri "https://api.github.com/repos/$GitHubOwner/$GitHubRepo/pulls" `
+    -Method Post `
+    -Headers $headers `
+    -Body $payload `
+    -ContentType "application/json"
+
+$pr = $response.Content | ConvertFrom-Json
+# Use $pr.number and $pr.html_url for the PR number and URL
+```
+
+If `git credential fill` returns no credentials (empty password), fall back to trying `GITHUB_TOKEN` environment variable as the password with `token` as the username.
+
+If PR creation fails, report the error with details — the branch is already pushed so the user can create the PR manually.
+
+**If `$RepoHost` == `"azuredevops"`:**
+
 Use `ado-repo_create_pull_request` with:
-- `sourceRefName`: `refs/heads/ado-exec/story-{WorkItemId}`
+- `sourceRefName`: `refs/heads/{BranchName}`
 - `targetRefName`: `refs/heads/{$TargetBranch}`
 - `title`: `feat: {UserStory.Title} (ADO #{WorkItemId})`
 - `description`: a structured summary (see below)
 - `workItems`: the UserStory ID (and all task IDs, space-separated)
 
-**PR description format:**
+**PR description format (both hosts):**
 ```markdown
 ## Summary
 {2-3 sentence description of what this PR implements}
@@ -301,6 +376,7 @@ Add a final comment to the UserStory with:
 | Situation | Action |
 |---|---|
 | Cannot parse git remote URL | Stop, report, ask user to verify remote |
+| GitHub remote but ADO project not found via search | Stop, ask user to provide the ADO project name |
 | Cycle in task dependency graph | Stop, report the cycle, do not execute |
 | Task build/test fails after retry | Stop, comment on Task with error, do not create PR |
 | Git push fails | Stop, report, advise user to push manually |
