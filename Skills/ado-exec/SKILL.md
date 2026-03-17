@@ -23,6 +23,8 @@ or simply:
 
 The work item number is the only required input.
 
+> 💡 **Tip — reduce premium request usage:** Before invoking this skill, switch to a non-premium model with `/model` (e.g. `claude-haiku-4.5` or `gpt-4.1`). The model choice persists for the session. This skill is well-suited to cheaper models when work item tasks are clearly defined.
+
 ---
 
 ## Phase 0 — Environment Bootstrap
